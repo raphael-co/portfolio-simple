@@ -24,43 +24,41 @@ export default function ContactClient({ locale }: { locale: Locale }) {
     () =>
       locale === "fr"
         ? {
-            sent: "Message envoyé ✅",
-            fail: "Échec de l’envoi ❌",
-            sending: "Envoi...",
-            send: "Envoyer",
-            yourName: "Votre nom",
-            yourEmail: "Votre email",
-            yourMessage: "Votre message",
-            tip: "Astuce : en local, vérifiez l’onglet Réseau de votre navigateur (200 = OK).",
-            successTitle: "Merci !",
-            successDesc: "Votre message a bien été envoyé. Je reviens vers vous rapidement.",
-            close: "Fermer",
-            errorTitle: "Oups…",
-            errorDesc: "L’envoi a échoué. Essayez à nouveau, ou utilisez la solution temporaire ci-dessous.",
-            tryAgain: "Réessayer",
-            openMail: "Ouvrir mon client mail",
-            copyAll: "Copier le message",
-            copied: "Copié ✅",
-          }
+          sent: "Message envoyé ✅",
+          fail: "Échec de l’envoi ❌",
+          sending: "Envoi...",
+          send: "Envoyer",
+          yourName: "Votre nom",
+          yourEmail: "Votre email",
+          yourMessage: "Votre message",
+          successTitle: "Merci !",
+          successDesc: "Votre message a bien été envoyé. Je reviens vers vous rapidement.",
+          close: "Fermer",
+          errorTitle: "Oups…",
+          errorDesc: "L’envoi a échoué. Essayez à nouveau, ou utilisez la solution temporaire ci-dessous.",
+          tryAgain: "Réessayer",
+          openMail: "Ouvrir mon client mail",
+          copyAll: "Copier le message",
+          copied: "Copié ✅",
+        }
         : {
-            sent: "Message sent ✅",
-            fail: "Failed to send ❌",
-            sending: "Sending...",
-            send: "Send",
-            yourName: "Your name",
-            yourEmail: "Your email",
-            yourMessage: "Your message",
-            tip: "Tip: locally, check the Network tab in your browser (200 = OK).",
-            successTitle: "Thank you!",
-            successDesc: "Your message has been delivered. I’ll get back to you shortly.",
-            close: "Close",
-            errorTitle: "Whoops…",
-            errorDesc: "Sending failed. Please try again, or use the temporary fallback below.",
-            tryAgain: "Try again",
-            openMail: "Open my email app",
-            copyAll: "Copy the message",
-            copied: "Copied ✅",
-          },
+          sent: "Message sent ✅",
+          fail: "Failed to send ❌",
+          sending: "Sending...",
+          send: "Send",
+          yourName: "Your name",
+          yourEmail: "Your email",
+          yourMessage: "Your message",
+          successTitle: "Thank you!",
+          successDesc: "Your message has been delivered. I’ll get back to you shortly.",
+          close: "Close",
+          errorTitle: "Whoops…",
+          errorDesc: "Sending failed. Please try again, or use the temporary fallback below.",
+          tryAgain: "Try again",
+          openMail: "Open my email app",
+          copyAll: "Copy the message",
+          copied: "Copied ✅",
+        },
     [locale]
   );
 
@@ -128,7 +126,7 @@ export default function ContactClient({ locale }: { locale: Locale }) {
     try {
       await navigator.clipboard.writeText(text);
       notify(t.copied);
-    } catch {}
+    } catch { }
   }
 
   return (
@@ -154,8 +152,14 @@ export default function ContactClient({ locale }: { locale: Locale }) {
             </p>
             <p>
               <span className="opacity-60">{dict.contact_linkedin}:</span>{" "}
-              <Link href={profile.linkedin} className="text-brand hover:underline">
-                Profil
+              <Link href={profile.linkedin} className="text-brand hover:underline" target="_blank" rel="noopener noreferrer">
+                {profile.name}
+              </Link>
+            </p>
+            <p>
+              <span className="opacity-60">{dict.contact_github}:</span>{" "}
+              <Link href={profile.github} className="text-brand hover:underline" target="_blank" rel="noopener noreferrer">
+                {dict.all_repos}
               </Link>
             </p>
           </div>
@@ -172,7 +176,6 @@ export default function ContactClient({ locale }: { locale: Locale }) {
               {loading ? t.sending : t.send}
             </button>
           </form>
-          <p className="mt-3 text-xs opacity-60">{t.tip}</p>
         </Card>
       </div>
 

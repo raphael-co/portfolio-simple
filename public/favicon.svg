@@ -1,11 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <defs>
-    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#60a5fa"/>
-      <stop offset="1" stop-color="#2563eb"/>
-    </linearGradient>
-  </defs>
-  <rect rx="14" width="64" height="64" fill="url(#g)"/>
-  <path d="M18 46V18h10c6.5 0 10 3.8 10 9.2c0 5.1-3.7 8.8-9.8 8.8H24V46h-6zm6-24v10h7c3 0 4.8-1.9 4.8-5s-1.8-5-4.8-5h-7z"
-    fill="#fff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="R centré dans un C, fond bleu arrondi">
+  <!-- Fond bleu avec angles arrondis -->
+  <rect x="0" y="0" width="512" height="512" rx="48" ry="48" fill="rgb(36 99 235)"/>
+
+  <!-- C très grand en tracé (contour blanc épais, extrémités arrondies) -->
+  <path d="M356 83
+           A200 200 0 0 0 56 256
+           A200 200 0 0 0 356 429"
+        fill="none" stroke="white" stroke-width="80"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- R exactement centré -->
+  <text x="256" y="256" text-anchor="middle" dominant-baseline="central"
+        font-size="210" font-weight="900" fill="white"
+        font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif">R</text>
 </svg>

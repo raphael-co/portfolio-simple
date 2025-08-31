@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image"; // ✅ utiliser next/image
 import { usePathname } from "next/navigation";
 import { Moon, Sun, Globe, Menu, X } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -74,7 +75,15 @@ export default function Navbar({ dict, locale }: { dict: Dict; locale: Locale })
     <header className="sticky top-0 z-50 bg-white/70 shadow-sm backdrop-blur dark:bg-black/50">
       <nav className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link href={href(currentLocale)} className="flex items-center gap-2">
-          <img src="/favicon.svg" alt="Logo" className="h-6 w-6" />
+          {/* ✅ Image optimisée */}
+          <Image
+            src="/favicon.svg"
+            alt="Logo"
+            width={24}
+            height={24}
+            priority
+            className="h-6 w-6"
+          />
           <span className="font-semibold">Raphael Comandon</span>
         </Link>
 

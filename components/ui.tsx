@@ -1,22 +1,74 @@
-import { clsx } from "clsx";
+import clsx, { type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import * as React from "react";
 
-export function cn(...inputs: any[]) {
+/** Merge tailwind classes + variants proprement */
+export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function Section({ id, className, children, bleed = false }: { id?: string; className?: string; children: React.ReactNode; bleed?: boolean }) {
+/** Section
+ * - `children?` : optionnel (permet <Section ... /> vide)
+ * - `bleed` : si true, pas de container (plein écran)
+ * - `containerClassName` : override du conteneur par défaut
+ * - `as` : élément polymorphique ("section" par défaut)
+ */
+type SectionProps<E extends React.ElementType = "section"> = {
+  id?: string;
+  bleed?: boolean;
+  className?: string;
+  containerClassName?: string;
+  as?: E;
+  children?: React.ReactNode;
+} & Omit<React.ComponentPropsWithoutRef<E>, "as" | "className" | "children" | "id">;
+
+export function Section<E extends React.ElementType = "section">({
+  id,
+  bleed = false,
+  className,
+  containerClassName = "container mx-auto px-4",
+  as,
+  children,
+  ...rest
+}: SectionProps<E>) {
+  const Tag = (as || "section") as React.ElementType;
   return (
-    <section id={id} className={cn("relative", bleed ? "" : "container mx-auto px-4", className)}>
+    <Tag
+      id={id}
+      className={cn("relative", bleed ? "" : containerClassName, className)}
+      {...rest}
+    >
       {children}
-    </section>
+    </Tag>
   );
 }
 
-export function Badge({ children }: { children: React.ReactNode }) {
-  return <span className="inline-block rounded-full border px-3 py-1 text-xs dark:border-white/10">{children}</span>;
+/** Badge */
+export function Badge({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <span className={cn("inline-block rounded-full border px-3 py-1 text-xs dark:border-white/10", className)}>
+      {children}
+    </span>
+  );
 }
 
-export function Card({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn("rounded-2xl border p-6 shadow-sm dark:border-white/10", className)}>{children}</div>;
+/** Card */
+export function Card({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("rounded-2xl border p-6 shadow-sm dark:border-white/10", className)}>
+      {children}
+    </div>
+  );
 }

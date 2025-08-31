@@ -4,10 +4,16 @@ import { motion } from "framer-motion";
 import Balancer from "react-wrap-balancer";
 import Link from "next/link";
 import { type Locale, getDict } from "@/lib/i18n";
+import { usePathname } from "next/navigation";
 
 export default function Hero({ locale }: { locale: Locale }) {
   const dict = getDict(locale);
+  const pathname = usePathname();
 
+  const segments = pathname?.split("/") || [];
+  const currentLocale: Locale =
+    segments[1] === "en" || segments[1] === "fr" ? (segments[1] as Locale) : locale;
+  const href = (l: string, p: string = "") => `/${l}/${p}`.replace(/\/$/, "");
   return (
     <section className="relative overflow-hidden">
       {/* Animated grid background */}
@@ -43,7 +49,6 @@ export default function Hero({ locale }: { locale: Locale }) {
             {/* Soft ring */}
             {/* <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl ring-1 ring-black/10 dark:ring-white/10" /> */}
 
-            {/* Avatar image (transparent PNG) */}
             <motion.img
               initial={{ scale: 0.92, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -79,13 +84,14 @@ export default function Hero({ locale }: { locale: Locale }) {
             className="mt-8 flex items-center justify-center gap-3"
           >
             <Link
+              target="_blank" rel="noopener noreferrer"
               href="/Raphael_Comandon_CV.pdf"
               className="rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-white shadow hover:opacity-90"
             >
               {dict.btn_download_cv}
             </Link>
             <Link
-              href="./contact"
+              href={href(currentLocale, "contact")}
               className="rounded-full border px-5 py-2.5 text-sm font-medium hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
             >
               {dict.btn_contact_me}

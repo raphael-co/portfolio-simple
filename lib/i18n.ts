@@ -16,6 +16,7 @@ const fr: Dict = {
     "Je conçois des applications web & mobiles rapides, robustes et maintenables.",
   btn_download_cv: "Télécharger le CV (PDF)",
   btn_contact_me: "Me contacter",
+  contact_github: "GitHub",
   skills_title: "Compétences",
   skills_languages: "Langages",
   skills_frameworks: "Frameworks",
@@ -41,6 +42,7 @@ const fr: Dict = {
   search_projects_placeholder: "Rechercher un projet…",
   filter_all: "Tous",
   no_results: "Aucun projet ne correspond à la recherche.",
+  all_repos: "Tous les Repos",
 };
 
 const en: Dict = {
@@ -54,6 +56,8 @@ const en: Dict = {
     "I build fast, robust and maintainable web & mobile applications.",
   btn_download_cv: "Download CV (PDF)",
   btn_contact_me: "Contact me",
+  contact_github: "GitHub",
+  all_repos: "All Repos",
   skills_title: "Skills",
   skills_languages: "Languages",
   skills_frameworks: "Frameworks",

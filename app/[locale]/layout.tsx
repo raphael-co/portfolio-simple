@@ -6,7 +6,7 @@ import Footer from "@/components/footer";
 import { ThemeProvider } from "next-themes";
 import CommandPalette from "@/components/command-palette";
 import { ToastProvider } from "@/components/toast";
-import { getDict, type Locale } from "@/lib/i18n";
+import { getDict, type Locale, defaultLocale } from "@/lib/i18n";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -16,14 +16,19 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.svg" },
 };
 
-export default async function LocaleLayout({
-  children,
-  params,
-}: {
+type LayoutProps = {
   children: React.ReactNode;
-  params: Promise<{ locale: Locale }>;
-}) {
-  const { locale } = await params;
+  // ⬇️ ta config attend un Promise ici
+  params: Promise<{ locale: string }>;
+};
+
+function resolveLocale(l: string): Locale {
+  return l === "fr" || l === "en" ? l : defaultLocale;
+}
+
+export default async function LocaleLayout({ children, params }: LayoutProps) {
+  const { locale: raw } = await params; // ⬅️ on attend params
+  const locale = resolveLocale(raw);
   const dict = getDict(locale);
 
   return (
@@ -32,7 +37,7 @@ export default async function LocaleLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ToastProvider>
             <Navbar dict={dict} locale={locale} />
-            <main className="min-h-[83vh] flex align-center items-center justify-center">{children}</main>
+            <main className="min-h-[83vh]">{children}</main>
             <Footer />
             <CommandPalette />
           </ToastProvider>
