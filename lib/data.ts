@@ -566,4 +566,9 @@ export const techLogos: TechItem[] = [
   { title: "Leaflet", src: "/logos/leaflet.svg" },
   { title: "MultiversX", src: "/logos/multiversx.svg" },
   { title: "Stripe", src: "/logos/stripe.svg" },
+  { title: "Nodemailer", src: "/logos/nodemailer.webp", darkInvert: true },
+  { title: "Cloudinary", src: "/logos/cloudinary.svg" },
+  { title: "Figma", src: "/logos/figma.png" },
+  { title: "Proxmox", src: "/logos/Logo_Proxmox.svg", darkInvert: true },
+  { title: "Cloudflare", src: "/logos/cloudflare.svg" },
 ];
