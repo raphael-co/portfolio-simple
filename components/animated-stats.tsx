@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
-import { Card } from "@/components/ui";
 import { type Locale, getDict } from "@/lib/i18n";
 import { getProjects, getSkills, getExperience, education } from "@/lib/data";
 import { Briefcase, Rocket, Wrench, GraduationCap, Link2 } from "lucide-react";
@@ -16,7 +15,6 @@ type Stat = {
   icon?: React.ReactNode;
 };
 
-/* Compteur animé qui ne démarre que si `play` est true */
 function AnimatedNumber({ value, play }: { value: number; play: boolean }) {
   const mv = useMotionValue(0);
   const spring = useSpring(mv, { stiffness: 120, damping: 18, mass: 0.6 });
@@ -32,7 +30,6 @@ function AnimatedNumber({ value, play }: { value: number; play: boolean }) {
     const unsub = spring.on("change", (v) => setDisplay(Math.round(v)));
 
     if (play) {
-      // démarre l’anim
       mv.set(0);
       const t = setTimeout(() => mv.set(value), 120);
       return () => {
@@ -40,7 +37,6 @@ function AnimatedNumber({ value, play }: { value: number; play: boolean }) {
         clearTimeout(t);
       };
     } else {
-      // reset si pas encore visible
       mv.set(0);
       setDisplay(0);
       return () => unsub();
@@ -50,7 +46,6 @@ function AnimatedNumber({ value, play }: { value: number; play: boolean }) {
   return <span>{new Intl.NumberFormat().format(display)}</span>;
 }
 
-/* Une carte-stat indépendante, avec son propre inView */
 function StatCard({ stat, index }: { stat: Stat; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-15% 0px" });
@@ -93,13 +88,11 @@ export default function AnimatedStats({
 }) {
   const dict = getDict(locale);
 
-  // --------- Stats calculées depuis data.ts ----------
   const computed = useMemo<Stat[]>(() => {
     const skills = getSkills(locale);
     const projects = getProjects(locale);
     const xp = getExperience(locale);
 
-    // 1) Années d’XP (à partir de la plus vieille année trouvée)
     const years = xp
       .map((e) => {
         const m = e.period.match(/(20\d{2})/g);
@@ -109,11 +102,9 @@ export default function AnimatedStats({
     const firstYear = years.length ? Math.min(...years) : new Date().getFullYear();
     const yearsExp = Math.max(0, new Date().getFullYear() - firstYear);
 
-    // 2) Projets total & 3) Projets publics avec lien
     const totalProjects = projects.length;
     const liveProjects = projects.filter((p) => p.href && p.href !== "#").length;
 
-    // 4) Outils/techs (ensemble unique)
     const toolset = new Set([
       ...skills.languages,
       ...skills.frameworks,
@@ -122,7 +113,6 @@ export default function AnimatedStats({
     ]);
     const toolCount = toolset.size;
 
-    // 5) Diplômes
     const degrees = education.length;
 
     const fr = locale === "fr";

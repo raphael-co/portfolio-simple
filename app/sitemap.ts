@@ -1,4 +1,3 @@
-// app/sitemap.ts
 import { DOMAIN } from "@/lib/site";
 import type { MetadataRoute } from "next";
 

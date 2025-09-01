@@ -1,4 +1,3 @@
-// app/robots.txt/route.ts
 export function GET() {
   const domain = "https://www.raphaelcomandon-portfolio.fr";
   const body = [

@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-export const runtime = "nodejs"; // nodemailer nécessite Node.js runtime
-
-// --- Helpers --------------------------------------------------------------
+export const runtime = "nodejs";
 
 function escapeHtml(input: string = "") {
   return input
@@ -119,13 +117,11 @@ function renderContactEmail({
   </table>`;
 }
 
-// --- Handler --------------------------------------------------------------
 
 export async function POST(req: NextRequest) {
   try {
     const { name, email, message, website } = await req.json();
 
-    // Honeypot anti-spam
     if (website) return NextResponse.json({ ok: true });
 
     if (!name || !email || !message) {
@@ -135,14 +131,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Meta (facultatif)
     const ip =
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
       (req as any).ip ||
       undefined;
     const ua = req.headers.get("user-agent") || undefined;
 
-    // Lecture des variables d'env (supporte SMTP_* ou MAIL_*)
     const host =
       process.env.SMTP_HOST || process.env.MAIL_SERVER || "smtp.gmail.com";
     const portRaw = process.env.SMTP_PORT || process.env.Port;
@@ -166,7 +160,6 @@ export async function POST(req: NextRequest) {
       auth: user && pass ? { user, pass } : undefined,
     });
 
-    // Facultatif : vérifier la connexion en dev
     if (process.env.NODE_ENV !== "production") {
       try {
         await transporter.verify();

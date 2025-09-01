@@ -10,21 +10,9 @@ import { getDict } from "@/lib/i18n";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, Mail, Clipboard, X, ArrowRight, Github, Linkedin, Phone } from "lucide-react";
 import SpotlightCard from "./spotlight-card";
-import { TechItem, TechMarquee } from "./TechMarquee";
+import { TechMarquee } from "./TechMarquee";
 import { Field } from "./Field";
 
-/* ============================
-   Marquee responsive
-   - Logos & gap en clamp() => fluides selon viewport
-   - Durée recalculée après TOUT chargement d’images + ResizeObserver
-   - Pause au survol, respect prefers-reduced-motion
-   ============================ */
-
-
-
-/* ============================
-   PAGE CONTACT (le reste inchangé, j’insère juste le marquee)
-   ============================ */
 
 type Payload = { name: string; email: string; message: string; website?: string };
 
@@ -167,7 +155,6 @@ export default function ContactClient({ locale }: { locale: Locale }) {
       </motion.h1>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Colonne gauche */}
         <motion.div initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.05, duration: 0.5 }} className="min-w-0 flex justify-between flex-col"
         >
           <SpotlightCard className="relative overflow-hidden">
@@ -222,13 +209,11 @@ export default function ContactClient({ locale }: { locale: Locale }) {
             </div>
           </SpotlightCard>
 
-          {/* Marquee responsive */}
           <TechMarquee className="mt-4" items={techLogos} />
 
           <TechMarquee className="mt-4" items={techLogos} reverse={false}/>
         </motion.div>
 
-        {/* Colonne droite */}
         <motion.div initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1, duration: 0.5 }}>
           <motion.div animate={status === "error" ? { x: [0, -6, 6, -4, 4, 0] } : {}} transition={{ duration: 0.35 }}>
             <Card className="relative overflow-hidden">
@@ -268,7 +253,6 @@ export default function ContactClient({ locale }: { locale: Locale }) {
         </motion.div>
       </div>
 
-      {/* Overlays */}
       <AnimatePresence>
         {status === "success" && (
           <motion.div key="ok" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}

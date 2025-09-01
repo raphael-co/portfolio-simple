@@ -1,4 +1,3 @@
-// app/[locale]/page.tsx
 import type { Metadata } from "next";
 
 import { getDict, type Locale } from "@/lib/i18n";

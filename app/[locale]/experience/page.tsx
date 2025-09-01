@@ -10,7 +10,7 @@ export default async function ExperiencePage({
 }) {
   const { locale } = await params;
   const dict = getDict(locale);
-  const items = getExperience(locale); // FR/EN
+  const items = getExperience(locale);
 
   return (
     <Section className="py-12">

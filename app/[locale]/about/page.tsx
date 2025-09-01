@@ -38,9 +38,7 @@ export default async function AboutPage({
         </p>
       </header>
 
-      {/* Grille responsive : 1 col → 12 cols (8/4) */}
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* Colonne principale */}
         <div className="min-w-0 space-y-6 lg:col-span-8">
           <SpotlightCard className="p-4 sm:p-5 md:p-6">
             <h2 className="text-lg font-semibold sm:text-xl">{about.sections.who}</h2>
@@ -105,7 +103,6 @@ export default async function AboutPage({
           </SpotlightCard>
         </div>
 
-        {/* Colonne latérale */}
         <aside className="min-w-0 space-y-6 lg:col-span-4 xl:sticky xl:top-20 xl:h-fit">
           <SpotlightCard className="p-4 sm:p-5 md:p-6">
             <h2 className="text-lg font-semibold sm:text-xl">

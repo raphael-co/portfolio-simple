@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image"; // ✅ utiliser next/image
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Moon, Sun, Globe, Menu, X } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -32,7 +32,7 @@ export default function Navbar({ dict, locale }: { dict: Dict; locale: Locale })
   ];
 
   useEffect(() => {
-    setOpen(false); // ferme le menu au changement de route
+    setOpen(false);
   }, [pathname]);
 
   const ThemeButton = (
@@ -75,7 +75,6 @@ export default function Navbar({ dict, locale }: { dict: Dict; locale: Locale })
     <header className="sticky top-0 z-50 bg-white/70 shadow-sm backdrop-blur dark:bg-black/50">
       <nav className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link href={href(currentLocale)} className="flex items-center gap-2">
-          {/* ✅ Image optimisée */}
           <Image
             src="/favicon.svg"
             alt="Logo"
@@ -87,7 +86,6 @@ export default function Navbar({ dict, locale }: { dict: Dict; locale: Locale })
           <span className="font-semibold">Raphael Comandon</span>
         </Link>
 
-        {/* Desktop */}
         <div className="hidden items-center gap-3 md:flex md:gap-6">
           {links.map((l) => (
             <Link
@@ -105,7 +103,6 @@ export default function Navbar({ dict, locale }: { dict: Dict; locale: Locale })
           {ThemeButton}
         </div>
 
-        {/* Mobile: theme + burger */}
         <div className="flex items-center gap-2 md:hidden">
           {ThemeButton}
           <button
@@ -121,7 +118,6 @@ export default function Navbar({ dict, locale }: { dict: Dict; locale: Locale })
         </div>
       </nav>
 
-      {/* Mobile dropdown panel */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -148,7 +144,6 @@ export default function Navbar({ dict, locale }: { dict: Dict; locale: Locale })
                     </Link>
                   ))}
 
-                  {/* Lang quick switch */}
                   <div className="mt-2 flex items-center justify-between rounded-xl bg-black/[0.03] px-3 py-2 dark:bg-white/[0.06]">
                     <span className="text-sm opacity-80">Lang</span>
                     <div className="flex gap-2">

@@ -1,4 +1,3 @@
-// app/[locale]/opengraph-image.tsx
 import { ImageResponse } from "next/og";
 import { getDict, type Locale } from "@/lib/i18n";
 import { DOMAIN } from "@/lib/site";
@@ -13,19 +12,16 @@ export default async function OG({ params }: Props) {
   const { locale } = await params;
   const dict = getDict(locale);
 
-  // Titre affiché dans l'image (localisé)
   const title =
     locale === "fr"
       ? "Raphael Comandon — Développeur Full-Stack"
       : "Raphael Comandon — Full-Stack Developer";
 
-  // Sous-titre (ex: domaines d'expertise)
   const subtitle =
     locale === "fr"
       ? "React • Next.js • Node.js • TypeScript"
       : "React • Next.js • Node.js • TypeScript";
 
-  // Petit libellé avec le domaine (provenant du .env via lib/site.ts)
   const domainLabel = DOMAIN.replace(/^https?:\/\//, "");
 
   return new ImageResponse(

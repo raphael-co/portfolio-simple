@@ -33,7 +33,6 @@ export const metadata: Metadata = {
 
 type LayoutProps = {
   children: React.ReactNode;
-  // ⬇️ ta config attend un Promise ici
   params: Promise<{ locale: string }>;
 };
 
@@ -42,7 +41,7 @@ function resolveLocale(l: string): Locale {
 }
 
 export default async function LocaleLayout({ children, params }: LayoutProps) {
-  const { locale: raw } = await params; // ⬅️ on attend params
+  const { locale: raw } = await params;
   const locale = resolveLocale(raw);
   const dict = getDict(locale);
 

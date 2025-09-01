@@ -6,19 +6,16 @@ import { cn } from "@/components/ui";
 
 export type TechItem = {
   title: string;
-  /** chemin /public par défaut */
   src: string;
-  /** optionnel: logo spécifique pour le thème sombre */
   srcDark?: string;
-  /** optionnel: inverse automatiquement en dark (utile pour logos noir/blanc) */
   darkInvert?: boolean;
 };
 
 type TooltipState = {
   visible: boolean;
   text: string;
-  x: number; // centre horizontal (px, viewport)
-  y: number; // bottom of tooltip (px, viewport)
+  x: number;
+  y: number;
 };
 
 function shuffle<T>(arr: T[]): T[] {
@@ -30,20 +27,17 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-/** Tooltip rendu en portal, au-dessus de tout (indépendant du overflow). */
 function TooltipPortal({ state }: { state: TooltipState }) {
   if (typeof document === "undefined") return null;
   if (!state.visible) return null;
 
-  // Positionnement: on place le tooltip juste au-dessus (y) et centré (x)
-  // On utilise position: fixed pour ignorer les conteneurs à overflow.
   return createPortal(
     <div
       style={{
         position: "fixed",
         left: state.x,
         top: state.y,
-        transform: "translate(-50%, -100%)", // centre horizontalement, place au-dessus
+        transform: "translate(-50%, -100%)",
         zIndex: 9999,
         pointerEvents: "none",
       }}
@@ -59,8 +53,6 @@ function TooltipPortal({ state }: { state: TooltipState }) {
           left: "50%",
           top: "2px",
           transform: "translate(-50%, 0)",
-          // la pointe est sous la box (visuellement), mais comme on translate(-100%) sur le conteneur parent,
-          // cela revient à coller la flèche au bord inférieur.
         }}
       />
     </div>,
@@ -88,7 +80,6 @@ export function TechMarquee({
   const [order, setOrder] = useState<TechItem[]>(() => shuffle(items));
   const [duration, setDuration] = useState<number>(30);
 
-  // état tooltip global (un seul pour toutes les icônes)
   const [tt, setTt] = useState<TooltipState>({
     visible: false,
     text: "",
@@ -101,8 +92,8 @@ export function TechMarquee({
   const recalc = () => {
     const track = trackRef.current;
     if (!track) return;
-    const width = track.getBoundingClientRect().width; // largeur A+B
-    const distance = width / 2; // translation de 50% (piste dupliquée)
+    const width = track.getBoundingClientRect().width; 
+    const distance = width / 2;
     const d = Math.max(12, Math.min(60, distance / baseSpeed));
     setDuration(d);
   };
@@ -141,14 +132,14 @@ export function TechMarquee({
     if (el) el.style.animationPlayState = play ? "running" : "paused";
   };
 
-  // helpers tooltip
+
   const showTooltipFor = (el: HTMLElement, text: string) => {
     const rect = el.getBoundingClientRect();
     setTt({
       visible: true,
       text,
       x: rect.left + rect.width / 2,
-      y: rect.top - 8, // 8px d'espace au-dessus de l'icône
+      y: rect.top - 8, 
     });
   };
 
@@ -168,7 +159,6 @@ export function TechMarquee({
       visible: false,
     }));
 
-  // Un seul tooltip global, donc on attache des handlers sur chaque logo
   const renderLogo = (it: TechItem, keyStr: string) => (
     <li key={keyStr} className="shrink-0">
       <div
@@ -177,7 +167,6 @@ export function TechMarquee({
         onMouseMove={(e) => moveTooltipFor(e.currentTarget as HTMLElement)}
         onMouseLeave={hideTooltip}
       >
-        {/* <picture> permet un src différent en dark si fourni */}
         <picture>
           {it.srcDark && (
             <source media="(prefers-color-scheme: dark)" srcSet={it.srcDark} />
@@ -185,7 +174,6 @@ export function TechMarquee({
           <img
             src={it.src}
             alt={it.title}
-            // évite le double-tooltip natif
             height={1}
             width={1}
             loading="lazy"
@@ -209,7 +197,6 @@ export function TechMarquee({
       <div
         ref={wrapRef}
         className={cn(
-          // on peut laisser overflow-hidden: le tooltip est en portal (fixed), donc non rogné
           "relative w-full max-w-full overflow-hidden rounded-xl border bg-white/40 dark:border-white/10 dark:bg-neutral-900/40",
           className
         )}
@@ -220,7 +207,6 @@ export function TechMarquee({
           } as React.CSSProperties
         }
       >
-        {/* Fades latéraux */}
         <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white to-transparent dark:from-neutral-950" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent dark:from-neutral-950" />
 
@@ -241,15 +227,12 @@ export function TechMarquee({
               } as React.CSSProperties
             }
           >
-            {/* piste A */}
             {order.map((it, idx) => renderLogo(it, `a-${idx}-${it.title}`))}
-            {/* piste B */}
             {order.map((it, idx) => renderLogo(it, `b-${idx}-${it.title}`))}
           </ul>
         </div>
       </div>
 
-      {/* Tooltip global en portal */}
       <TooltipPortal state={tt} />
     </>
   );

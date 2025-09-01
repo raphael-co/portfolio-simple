@@ -8,45 +8,37 @@ import { cn, Section } from "./ui";
 import { getDict, Locale } from "@/lib/i18n";
 import { usePathname } from "next/navigation";
 
-/* =======================
-   Dotted grid (Canvas)
-   - Points via canvas (perf)
-   - Couleur = currentColor (suit le thème)
-   - Fade radial via mask-image (inline)
-   - Hover: amplification gaussienne autour de la souris
-   - Meilleure visibilité en dark: alpha plus élevé + léger glow
-   ======================= */
+
 
 type GridProps = {
   className?: string;
-  density?: number;         // distance entre points (px)
-  baseRadius?: number;      // rayon de base des points (px)
-  hoverBoost?: number;      // amplification max au centre
-  influenceRadius?: number; // rayon d’influence (px)
-  fadeStop?: string;        // "70%", "75%", etc.
-  followDamping?: number;   // 0..1 (plus petit = plus smooth)
-  alphaLight?: number;      // opacité en thème clair
-  alphaDark?: number;       // opacité en thème sombre (plus élevé pour bien ressortir)
-  darkGlow?: number;        // intensité du glow (px) en dark
+  density?: number;        
+  baseRadius?: number;    
+  hoverBoost?: number;      
+  influenceRadius?: number; 
+  fadeStop?: string;        
+  followDamping?: number;   
+  alphaLight?: number;
+  alphaDark?: number;      
+  darkGlow?: number;       
 };
 
 function DottedRadialGridCanvas({
   className,
   density = 24,
-  baseRadius = 1.6,         // ↑ ronds plus grands par défaut
-  hoverBoost = 2.25,        // ↑ plus gros au survol
-  influenceRadius = 190,    // halo un peu plus large
+  baseRadius = 1.6,       
+  hoverBoost = 2.25,      
+  influenceRadius = 190,  
   fadeStop = "76%",
   followDamping = 0.16,
   alphaLight = 0.24,
-  alphaDark = 0.45,         // ↑ meilleure visibilité en dark
-  darkGlow = 0.8,           // léger glow pour pop en dark
+  alphaDark = 0.45,        
+  darkGlow = 0.8,      
 }: GridProps) {
   const wrapRef = React.useRef<HTMLDivElement | null>(null);
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
   const rafRef = React.useRef<number | null>(null);
 
-  // Souris (cible) et rendu (lissé)
   const mouseTarget = React.useRef<{ x: number; y: number; inside: boolean }>({
     x: 0,
     y: 0,
@@ -58,7 +50,6 @@ function DottedRadialGridCanvas({
     inside: false,
   });
 
-  // Points + dimensions
   const pointsRef = React.useRef<Array<{ x: number; y: number }>>([]);
   const sizeRef = React.useRef<{ w: number; h: number; dpr: number }>({
     w: 0,
@@ -87,7 +78,6 @@ function DottedRadialGridCanvas({
       canvas.style.width = `${rect.width}px`;
       canvas.style.height = `${rect.height}px`;
 
-      // Grille centrée
       const pts: Array<{ x: number; y: number }> = [];
       const step = density;
       const xCount = Math.ceil(rect.width / step) + 2;
@@ -104,15 +94,15 @@ function DottedRadialGridCanvas({
     };
 
     const getFillStyle = () => {
-      // Couleur = currentColor du wrapper
-      const c = getComputedStyle(wrap).color; // "rgb(...)" ou "rgba(...)"
+
+      const c = getComputedStyle(wrap).color;
       const m = c.match(/rgba?\(([^)]+)\)/);
       const [r, g, b] = m ? m[1].split(",").slice(0, 3).map(v => parseFloat(v)) : [0, 0, 0];
       const a = isDark() ? alphaDark : alphaLight;
       return `rgba(${r}, ${g}, ${b}, ${a})`;
     };
 
-    // Écoute globale -> pas besoin de pointer-events sur le calque
+
     const onMove = (ev: MouseEvent) => {
       const rect = wrap.getBoundingClientRect();
       const x = ev.clientX - rect.left;
@@ -130,11 +120,9 @@ function DottedRadialGridCanvas({
     window.addEventListener("mouseleave", onLeaveWindow, { passive: true });
     window.addEventListener("resize", resize, { passive: true });
 
-    // support bascule de thème via MutationObserver
     const mo =
       typeof MutationObserver !== "undefined"
         ? new MutationObserver(() => {
-            // force un redraw en changeant rien (alpha différent)
           })
         : null;
     mo?.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
@@ -149,7 +137,6 @@ function DottedRadialGridCanvas({
 
       const { w, h, dpr } = sizeRef.current;
 
-      // Lissage position souris
       mouseRender.current.x = lerp(mouseRender.current.x, mouseTarget.current.x, followDamping);
       mouseRender.current.y = lerp(mouseRender.current.y, mouseTarget.current.y, followDamping);
       mouseRender.current.inside = mouseTarget.current.inside;
@@ -158,10 +145,8 @@ function DottedRadialGridCanvas({
       ctx.save();
       ctx.scale(dpr, dpr);
 
-      // style couleur/alpha
       ctx.fillStyle = getFillStyle();
 
-      // léger glow seulement en dark
       if (isDark() && darkGlow > 0) {
         ctx.shadowColor = ctx.fillStyle;
         ctx.shadowBlur = darkGlow;
@@ -183,7 +168,7 @@ function DottedRadialGridCanvas({
           const dx = p.x - mx;
           const dy = p.y - my;
           const d2 = dx * dx + dy * dy;
-          const influence = Math.exp(-d2 / twoSigmaSq); // 0..1
+          const influence = Math.exp(-d2 / twoSigmaSq);
           r = r0 * (1 + (boost - 1) * influence);
         }
 
@@ -208,7 +193,6 @@ function DottedRadialGridCanvas({
     };
   }, [density, baseRadius, hoverBoost, influenceRadius, followDamping, alphaLight, alphaDark, darkGlow]);
 
-  // Masque radial dynamique (inline, compatible WebKit)
   const maskStyle: React.CSSProperties = {
     WebkitMaskImage: `radial-gradient(ellipse at center, black, transparent ${fadeStop})`,
     maskImage: `radial-gradient(ellipse at center, black, transparent ${fadeStop})`,
@@ -219,9 +203,7 @@ function DottedRadialGridCanvas({
       ref={wrapRef}
       aria-hidden
       className={cn(
-        // calque visuel qui ne bloque pas les interactions
         "pointer-events-none absolute inset-0 z-0",
-        // couleur source = currentColor : noir en clair / blanc en sombre
         "text-black dark:text-white",
         className
       )}
@@ -232,9 +214,6 @@ function DottedRadialGridCanvas({
   );
 }
 
-/* =======================
-   HERO
-   ======================= */
 
 export default function Hero({ locale }: { locale: Locale }) {
   const dict = getDict(locale);
@@ -247,23 +226,21 @@ export default function Hero({ locale }: { locale: Locale }) {
 
   return (
     <Section bleed className="relative overflow-hidden">
-      {/* Fond interactif à points */}
       <DottedRadialGridCanvas
         className="z-0"
         density={24}
-        baseRadius={1.6}      // ↑ ronds plus grands
-        hoverBoost={2.25}     // ↑ plus grand au survol
+        baseRadius={1.6}     
+        hoverBoost={2.25}     
         influenceRadius={190}
         fadeStop="76%"
         followDamping={0.16}
         alphaLight={0.24}
-        alphaDark={0.45}      // ↑ visibilité en dark
-        darkGlow={0.8}        // léger glow en dark
+        alphaDark={0.45}      
+        darkGlow={0.8}       
       />
 
       <div className="relative z-10 grid min-h-[60vh] place-items-center px-4 py-24">
         <div className="max-w-3xl text-center">
-          {/* Avatar + halo */}
           <div className="relative mx-auto mb-6 h-28 w-28 md:h-32 md:w-32">
             <motion.div
               className="absolute inset-0 -z-10 rounded-2xl blur-md"

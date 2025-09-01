@@ -1,4 +1,3 @@
-// app/[locale]/projects/page.tsx
 import type { Metadata } from "next";
 import ProjectsFilter from "@/components/projects-filter";
 import { getDict, type Locale } from "@/lib/i18n";
