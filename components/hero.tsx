@@ -39,7 +39,7 @@ export default function Hero({ locale }: { locale: Locale }) {
             {/* SVG pattern background (place /public/avatar-bg.svg) */}
             <motion.img
               src="/avatar-bg.svg"
-              alt=""
+              alt="Raphael Comandon"
               aria-hidden
               className="absolute inset-0 -z-10 h-full w-full rounded-2xl opacity-70 dark:opacity-60"
               initial={{ scale: 0.9, rotate: -4, opacity: 0 }}
@@ -54,7 +54,7 @@ export default function Hero({ locale }: { locale: Locale }) {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
               src="/avatar.png"
-              alt="Avatar"
+              alt="Raphael Comandon"
               className="h-full w-full rounded-2xl bg-white/70 object-cover shadow-sm ring-1 ring-black/10 backdrop-blur-sm dark:bg-white/5 dark:ring-white/10"
             />
           </div>

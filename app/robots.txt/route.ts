@@ -1,5 +1,14 @@
+// app/robots.txt/route.ts
 export function GET() {
-  return new Response(`User-agent: *\nAllow: /\nSitemap: https://example.com/sitemap.xml`, {
-    headers: { "content-type": "text/plain" },
+  const domain = "https://www.raphaelcomandon-portfolio.fr";
+  const body = [
+    "User-agent: *",
+    "Allow: /",
+    "Disallow: /api/",
+    `Sitemap: ${domain}/sitemap.xml`,
+  ].join("\n");
+
+  return new Response(body, {
+    headers: { "content-type": "text/plain; charset=utf-8" },
   });
 }

@@ -1,13 +1,36 @@
+// app/sitemap.ts
+import { DOMAIN } from "@/lib/site";
 import type { MetadataRoute } from "next";
 
+
+const locales = ["fr", "en"] as const;
+const baseRoutes = ["", "/projects", "/experience", "/contact", "/about"];
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://example.com";
-  const routes = ["", "/projects", "/experience", "/contact", "/about"];
   const now = new Date();
-  return routes.map((r) => ({
-    url: base + r,
-    lastModified: now,
-    changeFrequency: "monthly",
-    priority: r === "" ? 1 : 0.7,
-  }));
+
+  const items: MetadataRoute.Sitemap = [];
+
+  for (const route of baseRoutes) {
+    for (const locale of locales) {
+      const url = `${DOMAIN}/${locale}${route}`;
+      const alternates: Record<string, string> = {};
+      for (const alt of locales) {
+        alternates[alt] = `${DOMAIN}/${alt}${route}`;
+      }
+      alternates["x-default"] = `${DOMAIN}/fr${route}`;
+
+      items.push({
+        url,
+        lastModified: now,
+        changeFrequency: "monthly",
+        priority: route === "" ? 1 : 0.7,
+        alternates: {
+          languages: alternates,
+        },
+      });
+    }
+  }
+
+  return items;
 }
