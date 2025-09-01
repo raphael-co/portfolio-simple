@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Section, Card, cn } from "@/components/ui";
 import { useToast } from "@/components/toast";
 import { profile, techLogos } from "@/lib/data";

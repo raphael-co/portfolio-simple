@@ -1,6 +1,6 @@
 "use client";
 import Hero from "@/components/hero";
-import { Section, Card, Badge } from "@/components/ui";
+import { Section, Badge } from "@/components/ui";
 import { education, getSkills } from "@/lib/data";
 import Link from "next/link";
 import AnimatedStats from "@/components/animated-stats";

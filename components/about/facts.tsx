@@ -7,7 +7,6 @@ import Link from "next/link";
 
 export type Fact = { label: string; value: string; href?: string };
 
-/* Tooltip dans <body> (évite le clipping) */
 function BodyTooltip({
   anchor,
   text,
@@ -66,7 +65,6 @@ function BodyTooltip({
   );
 }
 
-/* Truncate seulement ≥ sm ; sur mobile, on wrap pour tout voir */
 function TruncateWithTooltip({
   text,
   href,
