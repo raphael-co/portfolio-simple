@@ -53,7 +53,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             <Navbar dict={dict} locale={locale} />
             <main className="min-h-[83vh]">{children}</main>
             <Footer />
-            <CommandPalette />
+            <CommandPalette locale={locale} />
           </ToastProvider>
         </ThemeProvider>
       </body>
