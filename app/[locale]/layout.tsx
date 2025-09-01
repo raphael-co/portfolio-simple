@@ -1,4 +1,3 @@
-// app/[locale]/layout.tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
@@ -12,18 +11,15 @@ import { DOMAIN } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
-// --- CONFIG DOMAINE ---
-
-
-// Valeurs globales (fallback). Les titres/descriptions seront définis page par page.
 export const metadata: Metadata = {
   metadataBase: new URL(DOMAIN),
-  applicationName: "Raphael Comandon — Portfolio",
-  description: "Développeur Full-Stack. Découvrez mon portfolio, mes projets, mon expérience et contactez-moi pour vos missions web et mobiles.",
+  applicationName: "Raphael Comandon — Développeur Full-Stack",
+  description:
+    "Développeur Full-Stack spécialisé en React, Next.js, Node.js et TypeScript. Découvrez mon portfolio, mes projets et contactez-moi pour vos missions web et mobiles.",
   icons: {
-    icon: "/favicon.svg",
-    apple: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+    shortcut: "/favicon-32x32.png",
   },
   openGraph: {
     type: "website",
@@ -32,22 +28,27 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@ton_handle",
-    creator: "@ton_handle",
   },
 };
+
 type LayoutProps = {
   children: React.ReactNode;
-  params: Promise<{ locale: Locale }>;
+  // ⬇️ ta config attend un Promise ici
+  params: Promise<{ locale: string }>;
 };
 
+function resolveLocale(l: string): Locale {
+  return l === "fr" || l === "en" ? l : defaultLocale;
+}
+
 export default async function LocaleLayout({ children, params }: LayoutProps) {
-  const { locale } = await params;
+  const { locale: raw } = await params; // ⬅️ on attend params
+  const locale = resolveLocale(raw);
   const dict = getDict(locale);
 
   return (
-    <html lang={locale} className={inter.variable} suppressHydrationWarning>
-      <body>
+    <html lang={locale} suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ToastProvider>
             <Navbar dict={dict} locale={locale} />
