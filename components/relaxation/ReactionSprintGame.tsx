@@ -6,10 +6,10 @@ import {
   RunResult,
   TrialState,
   dailyRng,
-  formatMs,
   lsGet,
   lsSet,
   todayKey,
+  FALSE_START_PENALTY_MS,
 } from "./utils";
 import Playfield from "./Playfield";
 import StatsPanel from "./StatsPanel";
@@ -19,7 +19,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 export default function ReactionSprintGame({ locale }: { locale: Locale }) {
   const trialsPerRun = 5;
   const dateKey = todayKey();
-
   const rng = useMemo(() => dailyRng(locale ?? "fr"), [locale]);
 
   const [state, setState] = useState<TrialState>("idle");
@@ -38,7 +37,9 @@ export default function ReactionSprintGame({ locale }: { locale: Locale }) {
     setHistory(lsGet<RunResult[]>(`${LS_PREFIX}:history`, []));
   }, [dateKey]);
 
-  const totalMs = trialTimes.reduce((a, b) => a + b, 0);
+  const baseMs = trialTimes.reduce((a, b) => a + b, 0);
+  const penaltyMs = falseStarts * FALSE_START_PENALTY_MS;
+  const finalMs = baseMs + penaltyMs;
   const finished = state === "finished";
 
   const dailyDelays = useMemo(() => {
@@ -129,14 +130,14 @@ export default function ReactionSprintGame({ locale }: { locale: Locale }) {
 
     const result: RunResult = {
       dateKey,
-      totalMs,
+      totalMs: finalMs,
       trials: trialTimes,
       falseStarts,
       timestamp: Date.now(),
     };
 
     const currentBest = lsGet<RunResult | null>(`${LS_PREFIX}:best:${dateKey}`, null);
-    if (!currentBest || result.totalMs < currentBest.totalMs) {
+    if (!currentBest || finalMs < currentBest.totalMs) {
       lsSet(`${LS_PREFIX}:best:${dateKey}`, result);
       setBestToday(result);
     }
@@ -145,22 +146,22 @@ export default function ReactionSprintGame({ locale }: { locale: Locale }) {
     const next = [result, ...prev].slice(0, 15);
     lsSet(`${LS_PREFIX}:history`, next);
     setHistory(next);
-  }, [state, dateKey, falseStarts, totalMs, trialTimes]);
+  }, [state, dateKey, falseStarts, finalMs, trialTimes]);
 
   useEffect(() => {
     return () => clearArm();
   }, []);
 
   const share = useCallback(async () => {
-    const body = `Reaction Sprint — ${dateKey}\nTotal: ${totalMs.toFixed(
-      0
-    )} ms (${trialTimes.map((t) => t.toFixed(0)).join(", ")})${
-      falseStarts ? ` • False starts: ${falseStarts}` : ""
-    }\n#Relaxation #Portfolio`;
+    const body = `Reaction Sprint — ${dateKey}
+Total: ${finalMs.toFixed(0)} ms (${trialTimes.map((t) => t.toFixed(0)).join(", ")})${
+      falseStarts ? ` • +${penaltyMs} ms penalty (${falseStarts}×${FALSE_START_PENALTY_MS}ms)` : ""
+    }
+#Relaxation #Portfolio`;
     try {
       await navigator.clipboard.writeText(body);
     } catch {}
-  }, [dateKey, falseStarts, totalMs, trialTimes]);
+  }, [dateKey, penaltyMs, finalMs, trialTimes, falseStarts]);
 
   const statusLabel: string =
     state === "idle"
@@ -211,7 +212,7 @@ export default function ReactionSprintGame({ locale }: { locale: Locale }) {
           <Playfield
             state={state}
             locale={locale}
-            totalMs={totalMs}
+            finalMs={finalMs}
             trialIndex={trialIndex}
             readyAt={readyAt}
             pressedAt={pressedAt}
@@ -236,18 +237,14 @@ export default function ReactionSprintGame({ locale }: { locale: Locale }) {
             trialTimes={trialTimes}
             trialIndex={trialIndex}
             falseStarts={falseStarts}
-            totalMs={totalMs}
+            baseMs={baseMs}
+            finalMs={finalMs}
             isIdle={state === "idle"}
             isFinished={finished}
             onStartOrReset={state === "idle" ? startRun : reset}
             onShare={share}
           />
-
-          <HistoryList
-            locale={locale}
-            history={history}
-            onClear={() => setHistory([])}
-          />
+          <HistoryList locale={locale} history={history} onClear={() => setHistory([])} />
         </div>
       </div>
 

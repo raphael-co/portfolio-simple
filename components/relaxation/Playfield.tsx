@@ -5,7 +5,7 @@ import { formatMs, TrialState } from "./utils";
 type Props = {
   state: TrialState;
   locale: string;
-  totalMs: number;
+  finalMs: number;
   trialIndex: number;
   readyAt: number | null;
   pressedAt: number | null;
@@ -18,7 +18,7 @@ type Props = {
 export default function Playfield({
   state,
   locale,
-  totalMs,
+  finalMs,
   trialIndex,
   readyAt,
   pressedAt,
@@ -68,7 +68,7 @@ export default function Playfield({
           ) : state === "finished" ? (
             <>
               <span className="text-2xl sm:text-3xl font-semibold">
-                {totalMs.toFixed(0)} ms
+                {finalMs.toFixed(0)} ms
               </span>
               <span className="text-sm opacity-80">
                 {locale === "fr" ? "Terminé" : "Finished"}

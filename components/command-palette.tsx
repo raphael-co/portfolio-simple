@@ -6,35 +6,50 @@ import { Command } from "cmdk";
 import type { Locale } from "@/lib/i18n";
 
 export default function CommandPalette({ locale }: { locale: Locale }) {
-  const [open, setOpen] = React.useState(false);
   const router = useRouter();
 
+  const [open, setOpen] = React.useState(false);
+  const [isDesktop, setIsDesktop] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
+
   React.useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
+    setMounted(true);
+    const mql = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(mql.matches);
+    update();
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
+
+  React.useEffect(() => {
+    if (!isDesktop) return;
+    const onKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setOpen((v) => !v);
       }
-    }
+    };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [isDesktop]);
+
+  if (!mounted || !isDesktop) return null;
 
   const base = `/${locale}`;
   const labels =
     locale === "fr"
-      ? { home: "Accueil", projects: "Projets", experience: "Expérience", contact: "Contact" }
-      : { home: "Home", projects: "Projects", experience: "Experience", contact: "Contact" };
+      ? { home: "Accueil", projects: "Projets", experience: "Expérience", about: "À propos", relaxation: "Détente", contact: "Contact" }
+      : { home: "Home", projects: "Projects", experience: "Experience", about: "About", relaxation: "Relaxation", contact: "Contact" };
 
   const nav = [
     { seg: "", label: labels.home },
     { seg: "projects", label: labels.projects },
     { seg: "experience", label: labels.experience },
+    { seg: "about", label: labels.about },
+    { seg: "relaxation", label: labels.relaxation },
     { seg: "contact", label: labels.contact },
   ];
 
-  console.log(locale);
-  
   return (
     <>
       <button

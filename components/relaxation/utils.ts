@@ -15,6 +15,7 @@ export type RunResult = {
 };
 
 export const LS_PREFIX = "relax-reaction-sprint";
+export const FALSE_START_PENALTY_MS = 200;
 
 export function pad(n: number, digits = 2) {
   return n.toString().padStart(digits, "0");
@@ -67,6 +68,7 @@ export function lsGet<T>(key: string, fallback: T): T {
     return fallback;
   }
 }
+
 export function lsSet<T>(key: string, value: T) {
   try {
     localStorage.setItem(key, JSON.stringify(value));

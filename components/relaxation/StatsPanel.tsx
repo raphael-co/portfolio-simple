@@ -1,6 +1,6 @@
 "use client";
 
-import { formatMs } from "./utils";
+import { FALSE_START_PENALTY_MS } from "./utils";
 
 type Props = {
   locale: string;
@@ -8,7 +8,8 @@ type Props = {
   trialTimes: number[];
   trialIndex: number;
   falseStarts: number;
-  totalMs: number;
+  baseMs: number;
+  finalMs: number;
   isIdle: boolean;
   isFinished: boolean;
   onStartOrReset: () => void;
@@ -21,7 +22,8 @@ export default function StatsPanel({
   trialTimes,
   trialIndex,
   falseStarts,
-  totalMs,
+  baseMs,
+  finalMs,
   isIdle,
   isFinished,
   onStartOrReset,
@@ -48,29 +50,34 @@ export default function StatsPanel({
                 {locale === "fr" ? "Essai" : "Trial"} {i + 1}
               </span>
               <span className="font-medium">
-                {typeof val === "number" ? formatMs(val) : "—"}
+                {typeof val === "number" ? `${val.toFixed(0)} ms` : "—"}
               </span>
             </li>
           );
         })}
       </ul>
-
       <div className="mt-4 flex items-center justify-between">
         <div className="text-sm opacity-80">
           {locale === "fr" ? "Faux départs" : "False starts"}
         </div>
         <div className="text-sm font-medium">{falseStarts}</div>
       </div>
-
       <div className="mt-4 flex items-center justify-between">
         <div className="text-base font-semibold">
-          {locale === "fr" ? "Total" : "Total"}
+          {locale === "fr" ? "Total (avec pénalité)" : "Total (with penalty)"}
         </div>
         <div className="text-base font-semibold">
-          {trialTimes.length ? `${totalMs.toFixed(0)} ms` : "—"}
+          {trialTimes.length ? `${finalMs.toFixed(0)} ms` : "—"}
         </div>
       </div>
-
+      {trialTimes.length > 0 && (
+        <div className="mt-1 text-xs opacity-70">
+          = {baseMs.toFixed(0)} ms{" "}
+          {falseStarts > 0
+            ? `+ ${falseStarts} × ${FALSE_START_PENALTY_MS} ms`
+            : ""}
+        </div>
+      )}
       <div className="mt-4 flex gap-2">
         <button
           onClick={onStartOrReset}
