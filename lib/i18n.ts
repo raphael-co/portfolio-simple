@@ -43,6 +43,7 @@ const fr: Dict = {
   filter_all: "Tous",
   no_results: "Aucun projet ne correspond à la recherche.",
   all_repos: "Tous les Repos",
+  relaxation: "Détente",
 };
 
 const en: Dict = {
@@ -83,6 +84,7 @@ const en: Dict = {
   search_projects_placeholder: "Search a project…",
   filter_all: "All",
   no_results: "No project matches your search.",
+  relaxation: "Relaxation",
 };
 
 export const dictionaries: Record<Locale, Dict> = { fr, en };

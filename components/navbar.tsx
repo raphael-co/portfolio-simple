@@ -28,6 +28,7 @@ export default function Navbar({ dict, locale }: { dict: Dict; locale: Locale })
     { href: href(currentLocale, "projects"), label: dict.nav_projects },
     { href: href(currentLocale, "experience"), label: dict.nav_experience },
     { href: href(currentLocale, "about"), label: dict.nav_about },
+    { href: href(currentLocale, "relaxation"), label: dict.relaxation },
     { href: href(currentLocale, "contact"), label: dict.nav_contact },
   ];
 
@@ -154,7 +155,7 @@ export default function Navbar({ dict, locale }: { dict: Dict; locale: Locale })
                           className={cn(
                             "rounded-full border px-3 py-1 text-xs dark:border-white/10",
                             l === currentLocale &&
-                              "bg-black text-white dark:bg-white dark:text-black"
+                            "bg-black text-white dark:bg-white dark:text-black"
                           )}
                         >
                           {l.toUpperCase()}
