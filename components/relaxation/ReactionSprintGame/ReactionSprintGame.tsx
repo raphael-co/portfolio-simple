@@ -208,7 +208,7 @@ Total: ${finalMs.toFixed(0)} ms (${trialTimes.map((t) => t.toFixed(0)).join(", "
       </div>
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-start justify-start">
           <Playfield
             state={state}
             locale={locale}
