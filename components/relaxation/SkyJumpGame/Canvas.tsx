@@ -1,4 +1,3 @@
-// Canvas.tsx
 "use client";
 
 import type React from "react";
@@ -12,7 +11,6 @@ type Coin = { x: number; y: number; r: number; taken?: boolean };
 type PowerUp = { x: number; y: number; r: number; type: PowerUpType; taken?: boolean };
 type Player = { x: number; y: number; w: number; h: number; vx: number; vy: number };
 
-// Événements optionnels (si tu veux déboguer finement)
 type HistoryEntry =
     | {
         type: "coin";
@@ -20,8 +18,8 @@ type HistoryEntry =
         x: number;
         y: number;
         coinsCollected: number;
-        scoreAdded: number; // +100 par pièce
-        totalScore: number; // score après pickup
+        scoreAdded: number;
+        totalScore: number;
     }
     | {
         type: "end";
@@ -91,7 +89,7 @@ export default function Canvas({
     const scrollYRef = useRef(0);
 
     const coinsCountRef = useRef(0);
-    const coinScoreRef = useRef(0); // +100/coin
+    const coinScoreRef = useRef(0);
 
     const lastScoreRef = useRef(0);
     const lastCoinsRef = useRef(0);
@@ -108,7 +106,6 @@ export default function Canvas({
 
     const historyRef = useRef<HistoryEntry[]>([]);
 
-    // pour éviter les "stale closures" dans la boucle, on garde les callbacks dans des refs
     const onScoreRef = useRef(onScore);
     const onCoinsRef = useRef(onCoins);
     const onEndRef = useRef(onEnd);
@@ -128,15 +125,10 @@ export default function Canvas({
     };
     const clamp = (v: number, a: number, b: number) => (v < a ? a : v > b ? b : v);
 
-    // Score = altitude + bonus pièces
     const totalScore = () => {
 
         const coinsScore = 100 * coinsCountRef.current;
         const altitudeScore = Math.floor(scrollYRef.current);
-
-        console.log(coinsScore, altitudeScore);
-        console.log(coinsScore + altitudeScore);
-
 
         return Math.max(0, Math.floor(scrollYRef.current)) + coinScoreRef.current;
     }
@@ -185,7 +177,7 @@ export default function Canvas({
     const getSize = () => {
         const c = canvasRef.current;
         const dpr = window.devicePixelRatio || 1;
-        if (!c) return { width: 420, height: 560 };
+        if (!c) return { width: 320, height: 426 };
         return { width: c.width / dpr, height: c.height / dpr };
     };
 
@@ -518,7 +510,6 @@ export default function Canvas({
             player.y = yTarget;
         }
 
-        // Pièces (+100 chacune)
         for (const coin of coinsRef.current) {
             if (!coin.taken && circleRectIntersect(coin.x, coin.y, coin.r, player.x, player.y, player.w, player.h)) {
                 coin.taken = true;
@@ -636,7 +627,6 @@ export default function Canvas({
             coinsCollected: coinsFinal,
         });
 
-        // utilise les refs pour éviter les callbacks périmés
         onEndRef.current(final, coinsFinal);
         onHistory?.([...historyRef.current]);
     }
@@ -994,10 +984,10 @@ export default function Canvas({
     }
 
     return (
-        <div className="w-full" style={{ maxWidth }}>
+        <div className="w-full min-w-0" style={{ maxWidth: `min(100%, ${maxWidth}px)` }}>
             <div
                 ref={boxRef}
-                className="relative w-full rounded-[22px] border shadow-lg ring-1 ring-black/10 dark:border-white/10 dark:ring-white/10"
+                className="relative w-full min-w-0 rounded-[22px] border shadow-lg ring-1 ring-black/10 dark:border-white/10 dark:ring-white/10"
                 style={{ aspectRatio: `${aspectW} / ${aspectH}`, overflow: "hidden" }}
             >
                 <canvas
