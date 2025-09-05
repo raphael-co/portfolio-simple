@@ -1,3 +1,4 @@
+// SkyJumpGame.tsx
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -38,15 +39,19 @@ export default function SkyJumpGame({ locale }: { locale: Locale }) {
     setCoins(0);
   }, []);
 
+  // NOTE: onEnd now receives the final coins directly from Canvas to avoid stale state.
   const end = useCallback(
-    (finalScore: number) => {
+    (finalScore: number, coinsFromGame: number) => {
       setState("finished");
+      setCoins(coinsFromGame); // keep UI in sync immediately
+
       const run: SJRun = {
         dateKey,
-        score: finalScore,
-        coins,
+        score: finalScore,         // altitude + 100 * coins
+        coins: coinsFromGame,      // coins collected this run
         timestamp: Date.now(),
       };
+
       const currentBest = lsGet<SJRun | null>(`${SJ_PREFIX}:best:${dateKey}`, null);
       if (!currentBest || finalScore > currentBest.score) {
         lsSet(`${SJ_PREFIX}:best:${dateKey}`, run);
@@ -57,7 +62,7 @@ export default function SkyJumpGame({ locale }: { locale: Locale }) {
       lsSet(`${SJ_PREFIX}:history`, next);
       setHistory(next);
     },
-    [coins, dateKey]
+    [dateKey]
   );
 
   const labels =
@@ -90,7 +95,9 @@ export default function SkyJumpGame({ locale }: { locale: Locale }) {
       <div className="flex items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold sm:text-xl">{labels.title}</h2>
-          <p className="text-xs opacity-70">{locale === "fr" ? "Saut d’obstacles avec bonus" : "Obstacle jump with power-ups"}</p>
+          <p className="text-xs opacity-70">
+            {locale === "fr" ? "Saut d’obstacles avec bonus" : "Obstacle jump with power-ups"}
+          </p>
         </div>
         <div className="text-right">
           <p className="text-sm opacity-70">{labels.best}</p>
@@ -101,15 +108,17 @@ export default function SkyJumpGame({ locale }: { locale: Locale }) {
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         <div className="flex items-start justify-start">
           <Canvas
-            width={420}
-            height={560}
             state={state}
             rng={rng}
             start={start}
             reset={reset}
-            onEnd={end}
+            onEnd={end}                // <- receives (score, coins)
             onScore={setScore}
             onCoins={setCoins}
+            maxWidth={560}
+            aspectW={3}
+            locale={locale}
+            aspectH={4}
           />
         </div>
 
@@ -131,10 +140,18 @@ export default function SkyJumpGame({ locale }: { locale: Locale }) {
 
           <HistoryList
             history={history}
+            locale={locale}
+            collapsedCount={3}
             labels={{
               title: labels.history,
               none: labels.none,
               clear: labels.clear,
+              showMore: locale === "fr" ? "Afficher plus" : "Show more",
+              showLess: locale === "fr" ? "Afficher moins" : "Show less",
+              scoreLabel: labels.score,
+              coinsLabel: labels.coins,
+              dateLabel: locale === "fr" ? "Date" : "Date",
+              timeLabel: locale === "fr" ? "Heure" : "Time",
             }}
             onClear={() => {
               lsSet(`${SJ_PREFIX}:history`, []);
