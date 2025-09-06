@@ -1,14 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { Locale } from "@/lib/i18n";
 import TargetFrenzyGame from "@/components/relaxation/TargetFrenzyGame";
 import SkyJumpGame from "@/components/relaxation/SkyJumpGame";
 import ReactionSprintGame from "./ReactionSprintGame/ReactionSprintGame";
 
+type TabKey = "reaction" | "aim" | "jump";
+
 export default function GameTabs({ locale }: { locale: Locale }) {
-  const [tab, setTab] = useState<"reaction" | "aim" | "jump">("reaction");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // 1) Lis l’onglet depuis l’URL au premier rendu
+  const initialTab: TabKey = useMemo(() => {
+    const g = searchParams?.get("game");
+    return (g === "reaction" || g === "aim" || g === "jump") ? g : "reaction";
+  }, [searchParams]);
+
+  const [tab, setTab] = useState<TabKey>(initialTab);
+
+  // 2) Si l’URL change (back/forward), mets l’état à jour
+  useEffect(() => {
+    const g = searchParams?.get("game");
+    if (g === "reaction" || g === "aim" || g === "jump") {
+      setTab(g);
+    }
+  }, [searchParams]);
+
+  // 3) Quand on change d’onglet, reflète dans l’URL (replace pour éviter d’empiler l’historique)
+  const setTabAndUrl = (next: TabKey) => {
+    setTab(next);
+    const sp = new URLSearchParams(searchParams?.toString());
+    sp.set("game", next);
+    router.replace(`${pathname}?${sp.toString()}`, { scroll: false });
+  };
 
   const labels =
     locale === "fr"
@@ -34,7 +63,7 @@ export default function GameTabs({ locale }: { locale: Locale }) {
       <div className="rounded-2xl border p-2 dark:border-white/10">
         <div className="relative grid grid-cols-3">
           <button
-            onClick={() => setTab("reaction")}
+            onClick={() => setTabAndUrl("reaction")}
             className={`relative z-10 rounded-xl px-4 py-2 text-sm font-medium ${
               tab === "reaction" ? "opacity-100" : "opacity-70"
             }`}
@@ -42,7 +71,7 @@ export default function GameTabs({ locale }: { locale: Locale }) {
             {labels.reaction}
           </button>
           <button
-            onClick={() => setTab("aim")}
+            onClick={() => setTabAndUrl("aim")}
             className={`relative z-10 rounded-xl px-4 py-2 text-sm font-medium ${
               tab === "aim" ? "opacity-100" : "opacity-70"
             }`}
@@ -50,7 +79,7 @@ export default function GameTabs({ locale }: { locale: Locale }) {
             {labels.aim}
           </button>
           <button
-            onClick={() => setTab("jump")}
+            onClick={() => setTabAndUrl("jump")}
             className={`relative z-10 rounded-xl px-4 py-2 text-sm font-medium ${
               tab === "jump" ? "opacity-100" : "opacity-70"
             }`}

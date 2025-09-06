@@ -2,6 +2,7 @@
 
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SJState } from "./types";
 
 type PlatformType = "normal" | "fragile" | "spike" | "spring";
 type PowerUpType = "shield";
@@ -37,19 +38,25 @@ export default function Canvas({
     onScore,
     onCoins,
     onHistory,
+    onRequestPause,
+    onRequestResume,
+    onRequestRestart,
     maxWidth = 560,
     aspectW = 3,
     aspectH = 4,
     locale = "fr",
 }: {
-    state: "idle" | "running" | "finished";
+    state: SJState;
     rng: () => number;
     start: () => void;
     reset: () => void;
-    onEnd: (finalScore: number, coins: number) => void; // <<< envoie aussi les pièces
+    onEnd: (finalScore: number, coins: number) => void;
     onScore: (score: number) => void;
     onCoins: (coins: number) => void;
     onHistory?: (history: HistoryEntry[]) => void;
+    onRequestPause?: () => void;
+    onRequestResume?: () => void;
+    onRequestRestart?: () => void;
     maxWidth?: number;
     aspectW?: number;
     aspectH?: number;
@@ -64,6 +71,13 @@ export default function Canvas({
                 idleHint: "Maintiens gauche/droite pour bouger",
                 left: "Gauche",
                 right: "Droite",
+                menuTitle: "Menu",
+                resume: "Reprendre",
+                close: "Fermer",
+                restart: "Recommencer",
+                fullscreen: "Plein écran (mobile)",
+                exitFullscreen: "Quitter plein écran",
+                menuAria: "Ouvrir le menu",
             };
         }
         return {
@@ -73,8 +87,16 @@ export default function Canvas({
             idleHint: "Hold left/right to move",
             left: "Left",
             right: "Right",
+            menuTitle: "Menu",
+            resume: "Resume",
+            close: "Close",
+            restart: "Restart",
+            fullscreen: "Fullscreen (mobile)",
+            exitFullscreen: "Exit fullscreen",
+            menuAria: "Open menu",
         };
     }, [locale]);
+
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const boxRef = useRef<HTMLDivElement | null>(null);
@@ -132,6 +154,43 @@ export default function Canvas({
 
         return Math.max(0, Math.floor(scrollYRef.current)) + coinScoreRef.current;
     }
+
+
+    // --- NEW: menu & fullscreen ---
+    const [menuOpen, setMenuOpen] = useState(false);
+    const wasRunningBeforeMenuRef = useRef(false);
+
+    const isMobile = () => window.innerWidth < 640; // ≈ tailwind 'sm'
+    const isFullscreen = () =>
+        typeof document !== "undefined" && !!document.fullscreenElement;
+    const toggleFullscreenMobile = async () => {
+        if (!isMobile()) return;
+        const el = boxRef.current;
+        if (!el) return;
+        try {
+            if (!isFullscreen()) {
+                await el.requestFullscreen?.();
+            } else {
+                await document.exitFullscreen?.();
+            }
+        } catch { }
+    };
+
+    const openMenu = () => {
+        if (!menuOpen) {
+            wasRunningBeforeMenuRef.current = state === "running";
+            onRequestPause?.();
+            setMenuOpen(true);
+        }
+    };
+    const resumeFromMenu = () => {
+        setMenuOpen(false);
+        onRequestResume?.();
+    };
+    const restartFromMenu = () => {
+        setMenuOpen(false);
+        onRequestRestart?.();
+    };
 
     // ----- Responsive -----
     useEffect(() => {
@@ -246,19 +305,30 @@ export default function Canvas({
         };
     }
 
+    const prevStateRef = useRef<SJState>(state);
     // ----- Cycle de vie -----
     useEffect(() => {
+        const prev = prevStateRef.current;
         if (state === "idle") {
+            // écran d’attente
+            stopLoop();
             setupWorld();
             drawIdle();
         } else if (state === "running") {
-            setupWorld();
+            // reset uniquement si on ne vient PAS de "paused"
+            if (prev !== "paused") {
+                setupWorld();
+            }
             startLoop();
+        } else if (state === "paused") {
+            stopLoop();
+            drawIdle();
         } else {
+            // "finished"
             stopLoop();
         }
+        prevStateRef.current = state;
         return () => stopLoop();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [state]);
 
     // Clavier
@@ -984,7 +1054,7 @@ export default function Canvas({
     }
 
     return (
-        <div className="w-full min-w-0" style={{ maxWidth: `min(100%, ${maxWidth}px)` }}>
+        <div className="w-full min-w-0" style={{ maxWidth }}>
             <div
                 ref={boxRef}
                 className="relative w-full min-w-0 rounded-[22px] border shadow-lg ring-1 ring-black/10 dark:border-white/10 dark:ring-white/10"
@@ -1012,6 +1082,50 @@ export default function Canvas({
                         display: "block",
                     }}
                 />
+
+                {/* NEW: bouton menu (⋯) */}
+                {/* bouton menu (⋯) */}
+                <button
+                    type="button"
+                    onClick={openMenu}
+                    className="absolute right-2 top-2 z-10 rounded-full bg-black/50 px-2 py-1 text-white backdrop-blur-sm hover:bg-black/60 dark:bg-white/20 dark:text-white"
+                    aria-label={t.menuAria}
+                >
+                    ⋯
+                </button>
+
+                {/* Overlay menu */}
+                {menuOpen && (
+                    <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                        <div className="w-[88%] max-w-xs rounded-2xl border bg-white p-4 text-sm shadow-xl dark:border-white/10 dark:bg-zinc-900">
+                            <div className="mb-3 text-center text-base font-semibold">
+                                {t.menuTitle}
+                            </div>
+                            <div className="grid gap-2">
+                                <button
+                                    onClick={resumeFromMenu}
+                                    className="rounded-lg border px-3 py-2 font-medium hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/10"
+                                >
+                                    {state === "paused" ? t.resume : t.close}
+                                </button>
+
+                                <button
+                                    onClick={restartFromMenu}
+                                    className="rounded-lg border px-3 py-2 font-medium hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/10"
+                                >
+                                    {t.restart}
+                                </button>
+
+                                <button
+                                    onClick={toggleFullscreenMobile}
+                                    className="sm:hidden rounded-lg border px-3 py-2 font-medium hover:bg-black/5 disabled:opacity-50 dark:border-white/10 dark:hover:bg-white/10"
+                                >
+                                    {isFullscreen() ? t.exitFullscreen : t.fullscreen}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

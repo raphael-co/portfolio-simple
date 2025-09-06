@@ -64,29 +64,34 @@ export default function HistoryList({
               const time = d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
 
               return (
-                <li
-                  key={r.timestamp}
-                  className="rounded-xl border p-3 text-sm dark:border-white/10"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center gap-3">
-                      <span className="rounded-md bg-black/5 px-2 py-0.5 text-xs dark:bg-white/10">
-                        {r.dateKey}
-                      </span>
-                      <span className="opacity-70">{L.dateLabel} :</span>
-                      <span className="font-medium">{date}</span>
+                            <li
+                key={r.timestamp}
+                className="rounded-xl border p-3 text-sm dark:border-white/10"
+              >
+                {/* Empile en mobile, aligne sur une ligne en ≥ sm */}
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  {/* Bloc gauche : puce  date */}
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <span className="rounded-md bg-black/5 px-2 py-0.5 text-xs dark:bg-white/10 shrink-0">
+                      {r.dateKey}
+                    </span>
+
+                    {/* Desktop (≥sm) : version détaillée avec libellés */}
+                    <div className="hidden sm:flex items-center gap-2">
                       <span className="opacity-70">· {L.timeLabel} :</span>
                       <span className="font-medium">{time}</span>
                     </div>
-
-                    <div className="flex items-center gap-4">
-                      <span className="opacity-70">{L.scoreLabel} :</span>
-                      <span className="font-semibold">{r.score}</span>
-                      <span className="opacity-70">{L.coinsLabel} :</span>
-                      <span className="font-semibold">{r.coins}</span>
-                    </div>
                   </div>
-                </li>
+
+                  {/* Bloc droit : score / coins */}
+                  <div className="flex items-center gap-4 sm:justify-end">
+                    <span className="opacity-70">{L.scoreLabel} :</span>
+                    <span className="font-semibold">{r.score}</span>
+                    <span className="opacity-70">{L.coinsLabel} :</span>
+                    <span className="font-semibold">{r.coins}</span>
+                  </div>
+                </div>
+              </li>
               );
             })}
           </ul>

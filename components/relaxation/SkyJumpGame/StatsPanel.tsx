@@ -1,5 +1,7 @@
 "use client";
 
+import { SJState } from "./types";
+
 export default function StatsPanel({
   labels,
   score,
@@ -19,7 +21,7 @@ export default function StatsPanel({
   coins: number;
   bestToday: number | null;
   onStart: () => void;
-  state: "idle" | "running" | "finished";
+  state: SJState;
 }) {
   return (
     <div className="rounded-2xl border p-4 sm:p-5 dark:border-white/10">

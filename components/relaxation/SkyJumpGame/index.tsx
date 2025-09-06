@@ -38,6 +38,22 @@ export default function SkyJumpGame({ locale }: { locale: Locale }) {
         setCoins(0);
     }, []);
 
+
+    const pause = useCallback(() => {
+        setState((s) => (s === "running" ? "paused" : s));
+    }, []);
+
+    const resume = useCallback(() => {
+        setState((s) => (s === "paused" ? "running" : s));
+    }, []);
+
+    const restart = useCallback(() => {
+        setScore(0);
+        setCoins(0);
+        setState("idle");
+        requestAnimationFrame(() => start());
+    }, [start]);
+
     const end = useCallback(
         (finalScore: number, coinsFromGame: number) => {
             setState("finished");
@@ -45,8 +61,8 @@ export default function SkyJumpGame({ locale }: { locale: Locale }) {
 
             const run: SJRun = {
                 dateKey,
-                score: finalScore,       
-                coins: coinsFromGame,     
+                score: finalScore,
+                coins: coinsFromGame,
                 timestamp: Date.now(),
             };
 
@@ -110,9 +126,12 @@ export default function SkyJumpGame({ locale }: { locale: Locale }) {
                         rng={rng}
                         start={start}
                         reset={reset}
-                        onEnd={end}               
+                        onEnd={end}
                         onScore={setScore}
                         onCoins={setCoins}
+                        onRequestPause={pause}
+                        onRequestResume={resume}
+                        onRequestRestart={restart}
                         maxWidth={560}
                         aspectW={3}
                         locale={locale}

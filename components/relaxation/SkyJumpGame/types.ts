@@ -1,4 +1,4 @@
-export type SJState = "idle" | "running" | "finished";
+export type SJState = "idle" | "running" | "paused" | "finished";
 
 export type SJRun = {
   dateKey: string;
