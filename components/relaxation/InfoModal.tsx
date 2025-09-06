@@ -87,6 +87,15 @@ export default function InfoModalButton({ locale }: { locale: Locale }) {
     if (open) closeBtnRef.current?.focus();
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
   return (
     <>
       <button
@@ -107,17 +116,20 @@ export default function InfoModalButton({ locale }: { locale: Locale }) {
             aria-modal="true"
             role="dialog"
             onClick={() => setOpen(false)}
+            style={{ height: "100dvh" }} // gère les barres iOS
           >
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
 
             <motion.div
-              className="relative z-[71] w-full max-w-xl rounded-2xl border bg-white p-4 shadow-lg dark:border-white/10 dark:bg-neutral-900 sm:p-5 md:p-6"
+              className="relative z-[71] w-full max-w-xl rounded-2xl border bg-white shadow-lg dark:border-white/10 dark:bg-neutral-900 sm:p-5 md:p-6
+                         flex max-h-[85dvh] flex-col p-4"
               initial={{ y: 20, opacity: 0, scale: 0.98 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: 10, opacity: 0, scale: 0.98 }}
               transition={{ type: "spring", stiffness: 380, damping: 26 }}
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Header */}
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-lg font-semibold sm:text-xl">{t.title}</h2>
                 <button
@@ -130,7 +142,7 @@ export default function InfoModalButton({ locale }: { locale: Locale }) {
                 </button>
               </div>
 
-              <div className="space-y-5">
+               <div className="space-y-5 overflow-y-auto pr-1">
                 <section>
                   <h3 className="text-base font-medium sm:text-lg">{t.rsTitle}</h3>
                   <ol className="mt-2 list-inside list-decimal space-y-1.5 text-sm opacity-90">
