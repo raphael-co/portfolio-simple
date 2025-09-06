@@ -1,8 +1,9 @@
 import GameTabs from "@/components/relaxation/GameTabs";
 import InfoModalButton from "@/components/relaxation/InfoModal";
+import RelaxationLoader from "@/components/relaxation/RelaxationLoader";
 import { Section } from "@/components/ui";
-
 import { type Locale } from "@/lib/i18n";
+import { Suspense } from "react";
 
 export const metadata = { title: "Relaxation — Raphael Comandon" };
 
@@ -33,7 +34,9 @@ export default async function Page({
             </header>
 
             <section className="mt-8">
-                <GameTabs locale={locale} />
+                <Suspense fallback={<RelaxationLoader locale={locale} />}>
+                    <GameTabs locale={locale} />
+                </Suspense>
             </section>
         </Section>
     );
