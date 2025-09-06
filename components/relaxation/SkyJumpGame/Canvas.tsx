@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { SJState } from "./types";
 
 type PlatformType = "normal" | "fragile" | "spike" | "spring";
@@ -97,7 +97,6 @@ export default function Canvas({
         };
     }, [locale]);
 
-
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const boxRef = useRef<HTMLDivElement | null>(null);
     const rafRef = useRef<number | null>(null);
@@ -148,33 +147,69 @@ export default function Canvas({
     const clamp = (v: number, a: number, b: number) => (v < a ? a : v > b ? b : v);
 
     const totalScore = () => {
-
-        const coinsScore = 100 * coinsCountRef.current;
-        const altitudeScore = Math.floor(scrollYRef.current);
-
         return Math.max(0, Math.floor(scrollYRef.current)) + coinScoreRef.current;
-    }
-
+    };
 
     // --- NEW: menu & fullscreen ---
     const [menuOpen, setMenuOpen] = useState(false);
     const wasRunningBeforeMenuRef = useRef(false);
 
-    const isMobile = () => window.innerWidth < 640; // ≈ tailwind 'sm'
-    const isFullscreen = () =>
-        typeof document !== "undefined" && !!document.fullscreenElement;
-    const toggleFullscreenMobile = async () => {
-        if (!isMobile()) return;
+    const isMobile = () => window.innerWidth < 640;
+    const isFullscreen = () => (typeof document !== "undefined" ? !!document.fullscreenElement : false);
+
+    // --- NEW: iPhone fallback detection
+    const isiPhone = () =>
+        typeof navigator !== "undefined" && /iPhone/i.test(navigator.userAgent || "");
+
+    const canNativeFullscreen = (el?: Element | null) =>
+        typeof document !== "undefined" &&
+        document.fullscreenEnabled &&
+        !!el?.requestFullscreen &&
+        !isiPhone(); // iPhone: pas de support natif utilisable
+
+    // --- NEW: pseudo fullscreen state (fallback iPhone)
+    const [pseudoFS, setPseudoFS] = useState(false);
+
+    const toggleFullscreenMobile = useCallback(async () => {
         const el = boxRef.current;
         if (!el) return;
-        try {
-            if (!isFullscreen()) {
-                await el.requestFullscreen?.();
-            } else {
-                await document.exitFullscreen?.();
-            }
-        } catch { }
-    };
+
+        // Si support natif (Android/desktop/iPad Safari récent), on l'utilise
+        if (canNativeFullscreen(el)) {
+            try {
+                if (!document.fullscreenElement) await el.requestFullscreen();
+                else await document.exitFullscreen?.();
+            } catch { }
+            return;
+        }
+
+        // Fallback iPhone: pseudo fullscreen via CSS
+        setPseudoFS((v) => !v);
+    }, []);
+
+    // Locker le scroll de la page quand pseudoFS actif
+    useEffect(() => {
+        const html = document.documentElement;
+        const body = document.body;
+        if (pseudoFS) {
+            html.classList.add("sj-lock");
+            body.classList.add("sj-lock");
+        } else {
+            html.classList.remove("sj-lock");
+            body.classList.remove("sj-lock");
+        }
+    }, [pseudoFS]);
+
+    // Sortir du pseudo-FS si rotation/resize (optionnel)
+    useEffect(() => {
+        const onResize = () => setPseudoFS(false);
+        window.addEventListener("orientationchange", onResize);
+        window.addEventListener("resize", onResize);
+        return () => {
+            window.removeEventListener("orientationchange", onResize);
+            window.removeEventListener("resize", onResize);
+        };
+    }, []);
 
     const openMenu = () => {
         if (!menuOpen) {
@@ -339,12 +374,20 @@ export default function Canvas({
             return !!n && (n.isContentEditable || tag === "input" || tag === "textarea" || tag === "select");
         };
 
+        const thePrevent = (k: string) =>
+            k === "ArrowLeft" ||
+            k.toLowerCase() === "a" ||
+            k === "ArrowRight" ||
+            k.toLowerCase() === "d" ||
+            k === " " ||
+            k === "Enter";
+
         const onKeyDown = (e: KeyboardEvent) => {
             if (isEditable(e.target)) return;
             const k = e.key;
             const isLeft = k === "ArrowLeft" || k.toLowerCase() === "a";
             const isRight = k === "ArrowRight" || k.toLowerCase() === "d";
-            thePrevent(k) && e.preventDefault();
+            if (thePrevent(k)) e.preventDefault();
 
             if (isLeft) keysRef.current.left = true;
             if (isRight) keysRef.current.right = true;
@@ -363,14 +406,6 @@ export default function Canvas({
             window.removeEventListener("keyup", onKeyUp);
         };
     }, [state, start]);
-
-    const thePrevent = (k: string) =>
-        k === "ArrowLeft" ||
-        k.toLowerCase() === "a" ||
-        k === "ArrowRight" ||
-        k.toLowerCase() === "d" ||
-        k === " " ||
-        k === "Enter";
 
     // Pause onglet masqué
     useEffect(() => {
@@ -741,25 +776,25 @@ export default function Canvas({
             };
         }
         return {
-            bgTop: "#0b1220",
-            bgBottom: "#1f1b2e",
-            vignette: "rgba(0,0,0,0.5)",
+            bgTop: "#e0f2fe",
+            bgBottom: "#ede9fe",
+            vignette: "rgba(0,0,0,0.24)",
             plat: "#10b981",
             platFrag: "#f59e0b",
             platSpike: "#ef4444",
-            platSpring: "#8b5cf6",
-            platEdge: "rgba(255,255,255,0.08)",
-            coin1: "#f59e0b",
+            platSpring: "#6366f1",
+            platEdge: "rgba(0,0,0,0.12)",
+            coin1: "#fde68a",
             coin2: "#fbbf24",
-            coinStroke: "rgba(255,255,255,0.25)",
-            powerStroke: "#67e8f9",
-            playerTop: "#e5e7eb",
-            playerBottom: "#cbd5e1",
-            playerEye: "#0b1220",
-            shieldGlow: "rgba(34,211,238,0.9)",
-            hudFill: "rgba(0,0,0,0.35)",
-            hudText: "#f8fafc",
-            shadow: "rgba(0,0,0,0.45)",
+            coinStroke: "rgba(0,0,0,0.25)",
+            powerStroke: "#22d3ee",
+            playerTop: "#111827",
+            playerBottom: "#1f2937",
+            playerEye: "#ffffff",
+            shieldGlow: "rgba(34,211,238,0.7)",
+            hudFill: "rgba(255,255,255,0.7)",
+            hudText: "#111827",
+            shadow: "rgba(0,0,0,0.25)",
         };
     }
 
@@ -1057,7 +1092,10 @@ export default function Canvas({
         <div className="w-full min-w-0" style={{ maxWidth }}>
             <div
                 ref={boxRef}
-                className="relative w-full min-w-0 rounded-[22px] border shadow-lg ring-1 ring-black/10 dark:border-white/10 dark:ring-white/10"
+                className={
+                    "relative w-full min-w-0 rounded-[22px] border shadow-lg ring-1 ring-black/10 dark:border-white/10 dark:ring-white/10 " +
+                    (pseudoFS ? "sj-pseudo-fs" : "")
+                }
                 style={{ aspectRatio: `${aspectW} / ${aspectH}`, overflow: "hidden" }}
             >
                 <canvas
@@ -1083,12 +1121,11 @@ export default function Canvas({
                     }}
                 />
 
-                {/* NEW: bouton menu (⋯) */}
-                {/* bouton menu (⋯) */}
+                {/* Bouton menu (⋯) */}
                 <button
                     type="button"
                     onClick={openMenu}
-                    className="absolute right-2 top-2 z-10 rounded-full bg-black/50 px-2 py-1 text-white backdrop-blur-sm hover:bg-black/60 dark:bg-white/20 dark:text-white"
+                    className="absolute right-2 top-2 z-10 rounded-full bg-black/50 px-2 py-1 text-white backdrop-blur-sm hover:bg-black/60"
                     aria-label={t.menuAria}
                 >
                     ⋯
@@ -1098,9 +1135,7 @@ export default function Canvas({
                 {menuOpen && (
                     <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-sm">
                         <div className="w-[88%] max-w-xs rounded-2xl border bg-white p-4 text-sm shadow-xl dark:border-white/10 dark:bg-zinc-900">
-                            <div className="mb-3 text-center text-base font-semibold">
-                                {t.menuTitle}
-                            </div>
+                            <div className="mb-3 text-center text-base font-semibold">{t.menuTitle}</div>
                             <div className="grid gap-2">
                                 <button
                                     onClick={resumeFromMenu}
@@ -1111,16 +1146,17 @@ export default function Canvas({
 
                                 <button
                                     onClick={restartFromMenu}
-                                    className="rounded-lg border px-3 py-2 font-medium hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/10"
+                                    className="rounded-lg border px-3 py-2 font-medium hover:bg_black/5 dark:border-white/10 dark:hover:bg-white/10"
                                 >
                                     {t.restart}
                                 </button>
 
+                                {/* Plein écran : affiche toujours le bouton sur mobile, avec natif si dispo sinon fallback */}
                                 <button
                                     onClick={toggleFullscreenMobile}
                                     className="sm:hidden rounded-lg border px-3 py-2 font-medium hover:bg-black/5 disabled:opacity-50 dark:border-white/10 dark:hover:bg-white/10"
                                 >
-                                    {isFullscreen() ? t.exitFullscreen : t.fullscreen}
+                                    {isFullscreen() || pseudoFS ? t.exitFullscreen : t.fullscreen}
                                 </button>
                             </div>
                         </div>

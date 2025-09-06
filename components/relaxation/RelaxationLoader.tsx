@@ -183,7 +183,6 @@ function DottedRadialGrid({
   );
 }
 
-/** Mini spinner conique + cercle pulsant */
 function BrandSpinner() {
   return (
     <div className="relative mx-auto h-16 w-16">
@@ -213,21 +212,19 @@ function BrandSpinner() {
   );
 }
 
-/** Barre de progression synchronisée avec la durée cible */
 function ProgressBar({ locale, durationMs = 1500 }: { locale: Locale; durationMs?: number }) {
   const [p, setP] = React.useState(0);
 
   React.useEffect(() => {
     let raf = 0;
     const start = performance.now();
-    const target = Math.max(200, durationMs); // bornes de sécurité
+    const target = Math.max(200, durationMs);
 
     const tick = (t: number) => {
       const elapsed = t - start;
       const ratio = Math.min(1, elapsed / target);
-      // Ease-out quad pour une progression plus naturelle
       const eased = 1 - Math.pow(1 - ratio, 2);
-      const next = eased * 95; // on laisse ~5% pour la fin (suspense réel)
+      const next = eased * 95;
       setP(next);
       if (ratio < 1) raf = requestAnimationFrame(tick);
     };
@@ -272,10 +269,8 @@ export default function RelaxationLoader({
   durationMs = 1500,
 }: {
   locale?: Locale;
-  /** Durée cible (ms) pour caler progress bar + fades du loader */
   durationMs?: number;
 }) {
-  // facteur d’échelle pour ajuster toutes les petites animations à la durée cible
   const k = Math.max(0.25, durationMs / 1500);
   const dur = (base: number) => Math.max(0.2, base * k);
 

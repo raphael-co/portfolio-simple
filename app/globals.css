@@ -26,3 +26,13 @@ html, body {
     transform: translateX(0%);
   }
 }
+
+.sj-pseudo-fs {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  width: 100vw !important;
+  height: 100dvh !important; /* dvh gère les barres iOS */
+  border-radius: 0 !important;
+}
+html.sj-lock, body.sj-lock { overflow: hidden !important; }
