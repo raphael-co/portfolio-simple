@@ -69,7 +69,17 @@ export const skillsByLocale: Record<Locale, Skills> = {
       "Playwright",
       "React Testing Library",
       "pnpm/npm",
-      "yarn"
+      "yarn",
+      "TanStack Query",
+      "Zod",
+      "Lucide React",
+      "next-themes",
+      "JSON",
+      "YAML",
+      "CSV",
+      "XML",
+      "OpenAPI/Swagger",
+      "JSON Schema"
     ],
     virtualization: ["Proxmox", "VMware Workstation", "VirtualBox"],
     notions: ["Python", "Java", "Angular", "CodeIgniter", "GraphQL", "Go (notions)", "Rust (notions)"],
@@ -113,7 +123,17 @@ export const skillsByLocale: Record<Locale, Skills> = {
       "Playwright",
       "React Testing Library",
       "pnpm/npm",
-      "yarn"
+      "yarn",
+      "TanStack Query",
+      "Zod",
+      "Lucide React",
+      "next-themes",
+      "JSON",
+      "YAML",
+      "CSV",
+      "XML",
+      "OpenAPI/Swagger",
+      "JSON Schema"
     ],
     virtualization: ["Proxmox", "VMware Workstation", "VirtualBox"],
     notions: ["Python", "Java", "Angular", "CodeIgniter", "GraphQL", "Go (basics)", "Rust (basics)"],
@@ -121,8 +141,6 @@ export const skillsByLocale: Record<Locale, Skills> = {
     interests: ["Tech watch", "Open source", "UI/UX", "Automation", "Travel", "Climbing", "Hiking", "Running"]
   }
 };
-
-
 
 /** Récupération localisée (utiliser ceci dans les pages) */
 export function getSkills(locale: Locale): Skills {
@@ -138,6 +156,12 @@ export const skills: Skills = skillsByLocale.fr;
 export type Project = { title: string; href?: string; description: string; stack?: string[] };
 
 const projectsFR: Project[] = [
+  {
+    title: "JSON Analyzer — Explorateur/Analyseur JSON",
+    href: "https://github.com/raphael-co/json-analyzer",
+    description: "Outil web pour coller/valider/formater du JSON, recherche, pliage, surlignage, paramètre ?json=… (b64:…). UI FR/EN.",
+    stack: ["Next.js (App Router)", "TypeScript", "Tailwind", "Framer Motion", "next-themes", "Lucide React", "JSON"],
+  },
   {
     title: "Mewe Jewels — E-commerce",
     href: "https://mewejewels.myshopify.com",
@@ -219,6 +243,12 @@ const projectsFR: Project[] = [
 ];
 
 const projectsEN: Project[] = [
+  {
+    title: "JSON Analyzer — JSON Explorer",
+    href: "https://github.com/raphael-co/json-analyzer",
+    description: "Web tool to paste/validate/format JSON, search, folding, syntax highlight, ?json=… (b64:…). FR/EN UI.",
+    stack: ["Next.js (App Router)", "TypeScript", "Tailwind", "Framer Motion", "next-themes", "Lucide React", "JSON"],
+  },
   {
     title: "Mewe Jewels — E-commerce",
     href: "https://mewejewels.myshopify.com",
@@ -562,7 +592,7 @@ export const techLogos: TechItem[] = [
   { title: "pnpm", src: "/logos/pnpm.svg" },
   { title: "npm", src: "/logos/npm.svg", darkInvert: true },
   { title: "Yarn", src: "/logos/yarn.svg" },
-  { title: "GitHub", src: "/logos/github-mark.svg",darkInvert: true },
+  { title: "GitHub", src: "/logos/github-mark.svg", darkInvert: true },
   { title: "Sentry", src: "/logos/sentry.svg" },
   { title: "Grafana", src: "/logos/grafana.svg" },
   { title: "Prometheus", src: "/logos/prometheus.svg" },
