@@ -51,6 +51,7 @@ export const skillsByLocale: Record<Locale, Skills> = {
     databases: ["MariaDB", "MySQL", "PostgreSQL", "SQLite", "Redis"],
     tools: [
       "Git",
+      "Node.js",
       "Docker",
       "Docker Compose",
       "NGINX",
@@ -58,6 +59,9 @@ export const skillsByLocale: Record<Locale, Skills> = {
       "macOS",
       "Windows",
       "Vercel",
+      "Cloudflare",
+      "Figma",
+      "Stripe",
       "GitHub Actions (CI/CD)",
       "ESLint",
       "Prettier",
@@ -91,6 +95,7 @@ export const skillsByLocale: Record<Locale, Skills> = {
     databases: ["MariaDB", "MySQL", "PostgreSQL", "SQLite", "Redis"],
     tools: [
       "Git",
+      "Node.js",
       "Docker",
       "Docker Compose",
       "NGINX",
@@ -98,6 +103,9 @@ export const skillsByLocale: Record<Locale, Skills> = {
       "macOS",
       "Windows",
       "Vercel",
+      "Cloudflare",
+      "Figma",
+      "Stripe",
       "GitHub Actions (CI/CD)",
       "ESLint",
       "Prettier",
@@ -329,7 +337,7 @@ const experienceFR: ExperienceEntry[] = [
   {
     company: "Linkeweaver",
     role: "Développeur Full-Stack",
-    period: "Décembre 2020 — Decembre 2023",
+    period: "Décembre 2020 — Décembre 2023",
     location: "Les Lilas",
     bullets: [
       "Développement back-end (PHP, Node.js/TypeScript) et front-end (React, HTML/CSS).",
