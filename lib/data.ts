@@ -158,7 +158,7 @@ export type Project = { title: string; href?: string; description: string; stack
 const projectsFR: Project[] = [
   {
     title: "JSON Analyzer — Explorateur/Analyseur JSON",
-    href: "https://github.com/raphael-co/json-analyzer",
+    href: "https://json-analyzer.raphaelcomandon-portfolio.fr",
     description: "Outil web pour coller/valider/formater du JSON, recherche, pliage, surlignage, paramètre ?json=… (b64:…). UI FR/EN.",
     stack: ["Next.js (App Router)", "TypeScript", "Tailwind", "Framer Motion", "next-themes", "Lucide React", "JSON"],
   },
@@ -245,7 +245,7 @@ const projectsFR: Project[] = [
 const projectsEN: Project[] = [
   {
     title: "JSON Analyzer — JSON Explorer",
-    href: "https://github.com/raphael-co/json-analyzer",
+    href: "https://json-analyzer.raphaelcomandon-portfolio.fr",
     description: "Web tool to paste/validate/format JSON, search, folding, syntax highlight, ?json=… (b64:…). FR/EN UI.",
     stack: ["Next.js (App Router)", "TypeScript", "Tailwind", "Framer Motion", "next-themes", "Lucide React", "JSON"],
   },
