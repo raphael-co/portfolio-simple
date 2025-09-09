@@ -157,6 +157,13 @@ export type Project = { title: string; href?: string; description: string; stack
 
 const projectsFR: Project[] = [
   {
+    title: "Brawl Stars Dashboard — Stats & Comparateur",
+    href: "https://brawlstars-dashboard.vercel.app/",
+    description:
+      "Tableau de bord Next.js 15 pour analyser son compte Brawl Stars : profil, battlelog, graphiques Recharts, comparateur de joueurs, images & assets via API.",
+    stack: ["Next.js 15 (App Router)", "TypeScript", "Tailwind", "Recharts", "RSC", "Brawl Stars API", "Vercel", "Edge/Node runtime"],
+  },
+  {
     title: "JSON Analyzer — Explorateur/Analyseur JSON",
     href: "https://json-analyzer.raphaelcomandon-portfolio.fr",
     description: "Outil web pour coller/valider/formater du JSON, recherche, pliage, surlignage, paramètre ?json=… (b64:…). UI FR/EN.",
@@ -243,6 +250,13 @@ const projectsFR: Project[] = [
 ];
 
 const projectsEN: Project[] = [
+  {
+    title: "Brawl Stars Dashboard — Stats & Comparator",
+    href: "https://brawlstars-dashboard.vercel.app/",
+    description:
+      "Next.js 15 dashboard to analyze Brawl Stars accounts: profile, battlelog, Recharts graphs, player comparator, images & assets via API.",
+    stack: ["Next.js 15 (App Router)", "TypeScript", "Tailwind", "Recharts", "RSC", "Brawl Stars API", "Vercel", "Edge/Node runtime"],
+  },
   {
     title: "JSON Analyzer — JSON Explorer",
     href: "https://json-analyzer.raphaelcomandon-portfolio.fr",
