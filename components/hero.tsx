@@ -277,7 +277,7 @@ export default function Hero({ locale }: { locale: Locale }) {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-4xl font-bold tracking-tight md:text-5xl"
           >
-            Raphael Comandon — Développeur Full-Stack (CI/CD, React, Next.js, Node.js)
+            Raphael Comandon — Développeur Full-Stack
           </motion.h1>
 
           <motion.p
