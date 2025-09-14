@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  web:
+    image: ghcr.io/OWNER/REPO:latest
+    container_name: portfolio-simple-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
