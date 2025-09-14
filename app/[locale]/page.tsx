@@ -93,8 +93,8 @@ export default async function Page({ params }: PageProps) {
     <>
       <h1 className="sr-only">
         {locale === "fr"
-          ? "Portfolio de Raphael Comandon, développeur Full-Stack CI/CD"
-          : "Portfolio of Raphael Comandon, Full-Stack Developer CI/CD"}
+          ? "Portfolio de Raphael Comandon, développeur Full-Stack"
+          : "Portfolio of Raphael Comandon, Full-Stack Developer"}
       </h1>
       <Home locale={locale} />
       <script
