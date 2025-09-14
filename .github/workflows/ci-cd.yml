@@ -74,21 +74,11 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
-    name: Deploy over SSH (docker compose)
+    name: Deploy over SSH (create compose + up)
     if: github.ref == 'refs/heads/main'
     needs: docker
     runs-on: ubuntu-latest
     steps:
-      - name: Upload docker-compose.prod.yml
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT || '22' }}
-          source: "docker-compose.prod.yml"
-          target: "~/apps/portfolio-simple/"
-
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.1.0
         with:
@@ -97,14 +87,28 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT || '22' }}
           script: |
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            mkdir -p ~/apps/portfolio-simple
-            cd ~/apps/portfolio-simple
-            # Replace placeholder with the real image (lowercased repo)
+            set -e
             REPO="${{ github.repository }}"
             IMAGE="ghcr.io/${REPO,,}:latest"
-            sed -i "s|ghcr.io/OWNER/REPO:latest|${IMAGE}|g" docker-compose.prod.yml
-            # Pull latest image + recreate
-            docker compose -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.prod.yml up -d
+
+            mkdir -p ~/apps/portfolio-simple
+            cat > ~/apps/portfolio-simple/docker-compose.prod.yml <<'YML'
+            version: "3.9"
+            services:
+              web:
+                image: __IMAGE__
+                container_name: portfolio-simple-web
+                restart: unless-stopped
+                ports:
+                  - "3000:3000"
+                environment:
+                  - NODE_ENV=production
+                  - NEXT_TELEMETRY_DISABLED=1
+            YML
+
+            sed -i "s|__IMAGE__|$IMAGE|g" ~/apps/portfolio-simple/docker-compose.prod.yml
+
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker compose -f ~/apps/portfolio-simple/docker-compose.prod.yml pull
+            docker compose -f ~/apps/portfolio-simple/docker-compose.prod.yml up -d
             docker image prune -f
